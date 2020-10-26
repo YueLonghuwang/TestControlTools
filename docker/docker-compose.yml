@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  Nginx:
+    restart: always
+    container_name: "OMS-Nginx"
+    image: nginx:alpine
+    links:
+      - service
+    # 映射端口
+    ports:
+      - 1234:80
+    networks:
+      - OMS-Network
+    # 数据卷
+    volumes:
+      - $PWD/nginx/html:/usr/share/nginx/html:ro
+      - $PWD/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  MySQL:
+    restart: always
+    container_name: "OMS-MySQL"
+    image: mysql:8
+    ports:
+      - 33061:3306
+    networks:
+      - OMS-Network
+    volumes:
+      - $PWD/data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: OperationsManagementSuiteV3DB
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: rengu
+      MYSQL_PASSWORD: rengu
+
+  service:
+    restart: always
+    container_name: "OMS-Server"
+    image: openjdk:8-alpine
+    # 依赖项
+    depends_on:
+      - MySQL
+    expose:
+      - 8080
+    ports:
+      - 6005:6005
+      - 6004:6004
+      - 3086:3086
+      - 3087:3087
+      - 3088:3088
+    networks:
+      - OMS-Network
+    volumes:
+      - $PWD/OMS-Server/operations-management-suite-v3-1.5.0-RELEASE.jar:/root/app.jar
+      - $PWD/data/OMS:/root/OMS
+    command: java -jar /root/app.jar --spring.profiles.active=docker
+
+networks:
+  OMS-Network:
+    driver: bridge
