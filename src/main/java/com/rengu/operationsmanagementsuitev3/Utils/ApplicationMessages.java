@@ -149,6 +149,8 @@ public class ApplicationMessages {
     public static final String No_CUSTOM_ID_COMPONENT_FOUND = "未发现自定义组件ID";
 
     //组件文件名称
-
     public static final String COMPONENT_TYPE_PROGRAM ="测试方案";
+
+    //导出体系建模设计方案
+    public static final String MODELING_NAME_ARGS_NAME_NOT_FOUND="体系建模设计方案名称未发现";
 }
